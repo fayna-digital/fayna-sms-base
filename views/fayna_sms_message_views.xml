@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Tree view ────────────────────────────────────────────────────── -->
+    <record id="fayna_sms_message_view_tree" model="ir.ui.view">
+        <field name="name">fayna.sms.message.tree</field>
+        <field name="model">fayna.sms.message</field>
+        <field name="arch" type="xml">
+            <tree string="SMS Message Queue" default_order="priority desc, create_date asc">
+                <field name="phone" readonly="1"/>
+                <field name="body" widget="char" optional="show"/>
+                <field name="partner_id" optional="show"/>
+                <field name="provider" optional="show"/>
+                <field name="priority" widget="priority" optional="show"/>
+                <field name="state" readonly="1"
+                       decoration-success="state == 'sent'"
+                       decoration-danger="state == 'failed'"
+                       decoration-warning="state == 'queued'"
+                       decoration-muted="state == 'draft'"/>
+                <field name="sent_at" optional="show"/>
+                <field name="retry_count" optional="show"/>
+                <field name="error_message" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ── Form view ────────────────────────────────────────────────────── -->
+    <record id="fayna_sms_message_view_form" model="ir.ui.view">
+        <field name="name">fayna.sms.message.form</field>
+        <field name="model">fayna.sms.message</field>
+        <field name="arch" type="xml">
+            <form string="SMS Message">
+                <header>
+                    <button name="action_queue" string="Queue" type="object"
+                            class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_retry" string="Retry" type="object"
+                            class="btn-warning"
+                            invisible="state != 'failed'"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state not in ('draft', 'queued')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,queued,sent,failed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Recipient">
+                            <field name="partner_id"/>
+                            <field name="phone"/>
+                        </group>
+                        <group string="Routing">
+                            <field name="provider"/>
+                            <field name="priority" widget="priority"/>
+                        </group>
+                    </group>
+                    <group string="Message">
+                        <field name="body" nolabel="1" colspan="2"/>
+                    </group>
+                    <group string="Delivery result" invisible="state == 'draft'">
+                        <group>
+                            <field name="sent_at" readonly="1"/>
+                            <field name="external_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="retry_count" readonly="1"/>
+                            <field name="max_retries"/>
+                            <field name="error_message" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── Search view ──────────────────────────────────────────────────── -->
+    <record id="fayna_sms_message_view_search" model="ir.ui.view">
+        <field name="name">fayna.sms.message.search</field>
+        <field name="model">fayna.sms.message</field>
+        <field name="arch" type="xml">
+            <search string="SMS Messages">
+                <field name="phone"/>
+                <field name="partner_id"/>
+                <field name="provider"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Queued" name="filter_queued"
+                        domain="[('state', '=', 'queued')]"/>
+                <filter string="Sent" name="filter_sent"
+                        domain="[('state', '=', 'sent')]"/>
+                <filter string="Failed" name="filter_failed"
+                        domain="[('state', '=', 'failed')]"/>
+                <filter string="High priority" name="filter_high"
+                        domain="[('priority', '=', '1')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="State" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Provider" name="group_provider"
+                            context="{'group_by': 'provider'}"/>
+                    <filter string="Date" name="group_date"
+                            context="{'group_by': 'create_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ── Action ───────────────────────────────────────────────────────── -->
+    <record id="fayna_sms_message_action" model="ir.actions.act_window">
+        <field name="name">Message Queue</field>
+        <field name="res_model">fayna.sms.message</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="fayna_sms_message_view_search"/>
+        <field name="context">{'search_default_filter_queued': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No SMS messages in queue.
+            </p>
+            <p>
+                Use <code>fayna.sms.message.send()</code> to queue an SMS
+                or create one manually here.
+            </p>
+        </field>
+    </record>
+
+</odoo>

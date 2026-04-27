@@ -13,12 +13,12 @@
         </record>
 
         <!--
-          Default provider technical name.  Leave empty until a concrete
-          provider module is installed and configured.
+          Default provider technical name.  Must match the suffix of
+          the provider model name (e.g. "turbosms" → fayna.sms.turbosms).
         -->
         <record id="param_sms_default_provider" model="ir.config_parameter">
             <field name="key">fayna_sms_base.default_provider</field>
-            <field name="value"></field>
+            <field name="value">turbosms</field>
         </record>
 
     </data>

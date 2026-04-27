@@ -17,6 +17,10 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #. module: fayna_sms_base
+msgid "Abstract SMS provider (inherit and implement send_sms)"
+msgstr "Абстрактний SMS-провайдер (наслідувати та реалізувати send_sms)"
+
+#. module: fayna_sms_base
 msgid "Abstract SMS provider (inherit and implement _send_sms)"
 msgstr "Абстрактний SMS-провайдер (наслідувати та реалізувати _send_sms)"
 
@@ -29,6 +33,18 @@ msgid "Delivered"
 msgstr "Доставлено"
 
 #. module: fayna_sms_base
+msgid "Draft"
+msgstr "Чернетка"
+
+#. module: fayna_sms_base
+msgid "Either phone or partner_id is required."
+msgstr "Потрібен номер телефону або партнер."
+
+#. module: fayna_sms_base
+msgid "Error"
+msgstr "Помилка"
+
+#. module: fayna_sms_base
 msgid "Error detail"
 msgstr "Деталі помилки"
 
@@ -37,8 +53,36 @@ msgid "Failed"
 msgstr "Помилка"
 
 #. module: fayna_sms_base
+msgid "Fayna SMS: Process queue"
+msgstr "Fayna SMS: обробка черги"
+
+#. module: fayna_sms_base
+msgid "High"
+msgstr "Високий"
+
+#. module: fayna_sms_base
+msgid "Max retries"
+msgstr "Максимум спроб"
+
+#. module: fayna_sms_base
+msgid "Message"
+msgstr "Повідомлення"
+
+#. module: fayna_sms_base
+msgid "Message Queue"
+msgstr "Черга повідомлень"
+
+#. module: fayna_sms_base
 msgid "Message body"
 msgstr "Текст повідомлення"
+
+#. module: fayna_sms_base
+msgid "No phone number available for this partner."
+msgstr "Для цього партнера не вказано номер телефону."
+
+#. module: fayna_sms_base
+msgid "Normal"
+msgstr "Звичайний"
 
 #. module: fayna_sms_base
 msgid "Partner"
@@ -49,6 +93,14 @@ msgid "Pending"
 msgstr "Очікує"
 
 #. module: fayna_sms_base
+msgid "Phone"
+msgstr "Телефон"
+
+#. module: fayna_sms_base
+msgid "Priority"
+msgstr "Пріоритет"
+
+#. module: fayna_sms_base
 msgid "Provider"
 msgstr "Провайдер"
 
@@ -57,16 +109,32 @@ msgid "Provider message ID"
 msgstr "ID повідомлення провайдера"
 
 #. module: fayna_sms_base
+msgid "Queued"
+msgstr "У черзі"
+
+#. module: fayna_sms_base
 msgid "Recipient"
 msgstr "Отримувач"
+
+#. module: fayna_sms_base
+msgid "Retry count"
+msgstr "Кількість спроб"
 
 #. module: fayna_sms_base
 msgid "SMS Log"
 msgstr "Журнал SMS"
 
 #. module: fayna_sms_base
+msgid "SMS Message Queue"
+msgstr "Черга SMS-повідомлень"
+
+#. module: fayna_sms_base
 msgid "SMS delivery log"
 msgstr "Журнал доставки SMS"
+
+#. module: fayna_sms_base
+msgid "SMS Messages"
+msgstr "SMS-повідомлення"
 
 #. module: fayna_sms_base
 msgid "Sent"
@@ -81,6 +149,10 @@ msgid "SMS Log Entry"
 msgstr "Запис журналу SMS"
 
 #. module: fayna_sms_base
+msgid "SMS Message"
+msgstr "SMS-повідомлення"
+
+#. module: fayna_sms_base
 msgid "Source model"
 msgstr "Модель-джерело"
 
@@ -89,9 +161,17 @@ msgid "Source record ID"
 msgstr "ID запису-джерела"
 
 #. module: fayna_sms_base
+msgid "State"
+msgstr "Стан"
+
+#. module: fayna_sms_base
 msgid "Status"
 msgstr "Статус"
 
 #. module: fayna_sms_base
 msgid "%(number)s [%(status)s]"
 msgstr "%(number)s [%(status)s]"
+
+#. module: fayna_sms_base
+msgid "Phone number '%(phone)s' is not valid E.164 format (e.g. +48123456789)."
+msgstr "Номер телефону '%(phone)s' не відповідає формату E.164 (наприклад +48123456789)."

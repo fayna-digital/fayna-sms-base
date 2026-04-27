@@ -115,6 +115,15 @@
     />
 
     <menuitem
+        id="menu_fayna_sms_message_queue"
+        name="Message Queue"
+        parent="menu_fayna_sms_root"
+        action="fayna_sms_message_action"
+        sequence="5"
+        groups="base.group_system"
+    />
+
+    <menuitem
         id="menu_fayna_sms_log"
         name="SMS Log"
         parent="menu_fayna_sms_root"

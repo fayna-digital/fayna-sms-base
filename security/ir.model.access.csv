@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_fayna_sms_log_admin,fayna.sms.log admin,model_fayna_sms_log,base.group_system,1,1,1,1
 access_fayna_sms_log_user,fayna.sms.log user,model_fayna_sms_log,base.group_user,1,0,0,0
+access_fayna_sms_message_admin,fayna.sms.message admin,model_fayna_sms_message,base.group_system,1,1,1,1
+access_fayna_sms_message_user,fayna.sms.message user,model_fayna_sms_message,base.group_user,1,0,0,0

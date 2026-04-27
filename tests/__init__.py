@@ -1,1 +1,1 @@
-from . import test_scaffold, test_fayna_sms_base
+from . import test_scaffold, test_fayna_sms_base, test_fayna_sms_message
