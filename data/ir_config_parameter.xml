@@ -12,5 +12,14 @@
             <field name="value">False</field>
         </record>
 
+        <!--
+          Default provider technical name.  Leave empty until a concrete
+          provider module is installed and configured.
+        -->
+        <record id="param_sms_default_provider" model="ir.config_parameter">
+            <field name="key">fayna_sms_base.default_provider</field>
+            <field name="value"></field>
+        </record>
+
     </data>
 </odoo>

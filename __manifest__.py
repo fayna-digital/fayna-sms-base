@@ -1,6 +1,6 @@
 {
     "name": "Fayna SMS Base",
-    "version": "17.0.0.1.0",
+    "version": "17.0.1.0.0",
     "category": "Tools/Camp Management",
     "summary": "Provider-agnostic SMS adapter base (abstract send + delivery log)",
     "description": """
@@ -25,7 +25,9 @@ TZ: fayna-digital-docs/contributing/CAMPSCOUT_MASTER_TZ.md §16 Phase 4
     "license": "LGPL-3",
     "depends": ["base", "mail"],
     "data": [
+        "security/ir.model.access.csv",
         "data/ir_config_parameter.xml",
+        "views/fayna_sms_log_views.xml",
     ],
     "installable": True,
     "application": False,

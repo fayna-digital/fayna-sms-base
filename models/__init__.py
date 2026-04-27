@@ -1,1 +1,2 @@
-# Phase 4 scaffold — add `from . import <model>` here when fields land.
+# Phase 4 — provider-agnostic SMS adapter base
+from . import fayna_sms_log, fayna_sms_provider

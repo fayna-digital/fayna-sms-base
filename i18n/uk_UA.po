@@ -1,0 +1,97 @@
+# Translation of fayna_sms_base to Ukrainian
+# © 2026 Fayna Digital — Volodymyr Shevchenko <admin@fayna.agency>
+# License LGPL-3
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo 17.0 fayna_sms_base\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-27 00:00+0000\n"
+"PO-Revision-Date: 2026-04-27 00:00+0000\n"
+"Last-Translator: Fayna Digital <admin@fayna.agency>\n"
+"Language-Team: Ukrainian\n"
+"Language: uk_UA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#. module: fayna_sms_base
+msgid "Abstract SMS provider (inherit and implement _send_sms)"
+msgstr "Абстрактний SMS-провайдер (наслідувати та реалізувати _send_sms)"
+
+#. module: fayna_sms_base
+msgid "Date"
+msgstr "Дата"
+
+#. module: fayna_sms_base
+msgid "Delivered"
+msgstr "Доставлено"
+
+#. module: fayna_sms_base
+msgid "Error detail"
+msgstr "Деталі помилки"
+
+#. module: fayna_sms_base
+msgid "Failed"
+msgstr "Помилка"
+
+#. module: fayna_sms_base
+msgid "Message body"
+msgstr "Текст повідомлення"
+
+#. module: fayna_sms_base
+msgid "Partner"
+msgstr "Партнер"
+
+#. module: fayna_sms_base
+msgid "Pending"
+msgstr "Очікує"
+
+#. module: fayna_sms_base
+msgid "Provider"
+msgstr "Провайдер"
+
+#. module: fayna_sms_base
+msgid "Provider message ID"
+msgstr "ID повідомлення провайдера"
+
+#. module: fayna_sms_base
+msgid "Recipient"
+msgstr "Отримувач"
+
+#. module: fayna_sms_base
+msgid "SMS Log"
+msgstr "Журнал SMS"
+
+#. module: fayna_sms_base
+msgid "SMS delivery log"
+msgstr "Журнал доставки SMS"
+
+#. module: fayna_sms_base
+msgid "Sent"
+msgstr "Відправлено"
+
+#. module: fayna_sms_base
+msgid "Sent at"
+msgstr "Відправлено о"
+
+#. module: fayna_sms_base
+msgid "SMS Log Entry"
+msgstr "Запис журналу SMS"
+
+#. module: fayna_sms_base
+msgid "Source model"
+msgstr "Модель-джерело"
+
+#. module: fayna_sms_base
+msgid "Source record ID"
+msgstr "ID запису-джерела"
+
+#. module: fayna_sms_base
+msgid "Status"
+msgstr "Статус"
+
+#. module: fayna_sms_base
+msgid "%(number)s [%(status)s]"
+msgstr "%(number)s [%(status)s]"
