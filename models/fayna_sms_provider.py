@@ -43,8 +43,7 @@ class FaynaSmsProvider(models.Model):
     # ── Credentials ───────────────────────────────────────────────────────────
     api_key = fields.Char(
         string="API key",
-        password=True,
-        help="Provider API key / token. Stored encrypted; masked in the UI.",
+        help="Provider API key / token. Masked in the UI via view widget.",
         groups="base.group_system",
     )
 
