@@ -198,7 +198,23 @@ class FaynaSmsMessage(models.Model):
     # ── Cron ─────────────────────────────────────────────────────────────────
     @api.model
     def _cron_process_sms_queue(self):
-        """Canonical cron entry point.  Delegates to :meth:`process_sms_queue`."""
+        """Canonical cron entry point.
+
+        Respects the ``fayna_sms_base.active`` feature flag (Strangler Fig §2):
+        when the flag is not ``"True"`` (default after install), the queue is
+        skipped so any legacy behaviour continues to own the domain until the
+        intentional flip.
+        """
+        active_flag = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("fayna_sms_base.active", default="False")
+        )
+        if active_flag != "True":
+            _logger.info(
+                "fayna_sms_base: cron skipped — feature flag 'fayna_sms_base.active' is not True"
+            )
+            return
         return self.process_sms_queue()
 
     @api.model

@@ -7,6 +7,18 @@ Versioning: Odoo `17.0.MAJOR.MINOR.PATCH`.
 
 ---
 
+## [17.0.2.0.0] — 2026-04-28
+
+### Added
+- `_cron_process_sms_queue()` now respects the `fayna_sms_base.active` feature flag
+  (Strangler Fig §2): cron is a no-op when the flag is not `"True"`. Direct calls
+  to `process_sms_queue()` bypass the flag (for programmatic use and tests).
+- 2 new tests (21, 22): verify cron is skipped when flag is `False` and dispatches
+  when flag is `True`.
+- README rewritten to production status with full feature documentation (uk).
+
+---
+
 ## [17.0.1.0.0] — 2026-04-27
 
 ### Added (full implementation)

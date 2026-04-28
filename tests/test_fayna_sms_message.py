@@ -197,3 +197,34 @@ class TestFaynaSmsMessage(TransactionCase):
         msg = self.Msg.send(phone="+48555666777", body="Urgent!", priority="1")
         self.assertEqual(msg.priority, "1")
         self.assertEqual(msg.state, "queued")
+
+    # ── 21. Cron respects feature flag — skips when active=False ──────────────
+    def test_21_cron_respects_feature_flag(self):
+        """_cron_process_sms_queue is a no-op when fayna_sms_base.active != 'True'."""
+        # Ensure flag is False (it should be by default after install)
+        self.env["ir.config_parameter"].sudo().set_param("fayna_sms_base.active", "False")
+
+        msg = self.Msg.create(dict(self._base_vals, state="queued"))
+        # Cron entry point must skip — msg stays queued
+        self.Msg._cron_process_sms_queue()
+        msg.invalidate_recordset()
+        self.assertEqual(msg.state, "queued", "Cron must be a no-op when feature flag is False")
+
+    # ── 22. Cron dispatches when feature flag is True ─────────────────────────
+    def test_22_cron_dispatches_when_flag_true(self):
+        """_cron_process_sms_queue dispatches messages when fayna_sms_base.active = 'True'."""
+        self.env["ir.config_parameter"].sudo().set_param("fayna_sms_base.active", "True")
+
+        msg = self.Msg.create(dict(self._base_vals, state="queued"))
+        success_result = {"success": True, "external_id": "FLAG-TRUE-1", "error": None}
+
+        with patch.object(
+            type(self.env["fayna.sms.turbosms"]), "send_sms", return_value=success_result
+        ):
+            self.Msg._cron_process_sms_queue()
+
+        msg.invalidate_recordset()
+        self.assertEqual(msg.state, "sent")
+
+        # Restore flag for other tests
+        self.env["ir.config_parameter"].sudo().set_param("fayna_sms_base.active", "False")

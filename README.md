@@ -1,44 +1,65 @@
-# Odoo 17 Fayna SMS Base — scaffold (Phase 4)
+# Fayna SMS Base — Odoo 17 (v17.0.2.0.0)
 
 ![Odoo Version](https://img.shields.io/badge/Odoo-17.0%20Community-purple)
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![Phase](https://img.shields.io/badge/Phase-4-red)
 ![License](https://img.shields.io/badge/License-LGPL--3-green.svg)
-![Status](https://img.shields.io/badge/Status-Scaffold-orange)
+![Status](https://img.shields.io/badge/Status-Production-brightgreen)
 
-**Developed by [Fayna Digital](https://www.fayna.agency) for CampScout and the broader Fayna Camp vertical stack.**
-**Author: Volodymyr Shevchenko**
-
----
-
-Provider-agnostic SMS adapter base (abstract send + delivery log).
-
-Phase 4 of the master plan: `CAMPSCOUT_MASTER_TZ.md §16`.
-
-Current state: **scaffold only** — installable but inert. Feature flag
-`fayna_sms_base.active` defaults to `False`. Implementation proceeds in
-increments listed in `docs/TZ.md`.
+**Розроблено [Fayna Digital](https://www.fayna.agency) для CampScout.**
+**Автор: Volodymyr Shevchenko**
 
 ---
 
-## Features (planned)
+## Що це
 
-Abstract SMS adapter interface. Provider modules (e.g. fayna_sms_turbosms) inherit.
+Базовий модуль SMS-інтеграції для Odoo 17. Надає абстрактний адаптер для будь-якого SMS-провайдера, чергу відправлення та журнал доставки.
+
+Конкретні провайдери (наприклад `fayna_sms_turbosms`) наслідують цей модуль і реалізують `send_sms()`.
 
 ---
 
-## Architecture
+## Можливості
+
+- `fayna.sms.provider.base` — абстрактний адаптер провайдера (патерн Strangler Fig)
+- `fayna.sms.message` — черга вихідних SMS зі станами `draft → queued → sent / failed`
+- `fayna.sms.log` — незмінний журнал кожного надісланого SMS
+- Логіка повтору: `max_retries`, `retry_count`, автоматичне позначення `failed`
+- Зручний метод: `fayna.sms.message.send(phone, body, partner_id=None)`
+- Нормалізація телефону у форматі E.164
+- Cron кожні 5 хвилин (активується через feature flag `fayna_sms_base.active`)
+- Views для черги та журналу у меню Settings → SMS
+- i18n: `uk_UA` + `pl_PL`
+
+---
+
+## Архітектура
 
 ```
 fayna_sms_base/
 ├── __manifest__.py
 ├── __init__.py
-├── data/ir_config_parameter.xml       # feature flag
-├── models/                             # Phase 4 implementation
-├── tests/test_scaffold.py              # install + flag + deps sanity
-├── docs/TZ.md                          # per-module TZ
-├── .github/workflows/ci.yml            # gate-2 CI
-├── .pre-commit-config.yaml             # gate-1 pre-commit
+├── data/
+│   ├── cron.xml                    # cron кожні 5 хв
+│   └── ir_config_parameter.xml     # feature flag + default_provider
+├── models/
+│   ├── sms_provider_base.py        # fayna.sms.provider (legacy alias)
+│   ├── fayna_sms_provider.py       # fayna.sms.provider.base (AbstractModel)
+│   ├── fayna_sms_log.py            # fayna.sms.log
+│   └── fayna_sms_message.py        # fayna.sms.message + process_sms_queue()
+├── security/
+│   └── ir.model.access.csv         # ACL для log і message
+├── views/
+│   ├── fayna_sms_log_views.xml
+│   └── fayna_sms_message_views.xml
+├── tests/
+│   ├── test_scaffold.py
+│   ├── test_fayna_sms_base.py      # 14 тестів для fayna.sms.log
+│   └── test_fayna_sms_message.py   # 22 тести для черги та cron
+├── i18n/
+│   ├── uk_UA.po
+│   └── pl_PL.po
+├── docs/TZ.md
 ├── pyproject.toml
 ├── LICENSE
 ├── CHANGELOG.md
@@ -47,7 +68,40 @@ fayna_sms_base/
 
 ---
 
-## Installation
+## Feature flag (Strangler Fig)
+
+Після встановлення cron **не відправляє SMS** — флаг `fayna_sms_base.active` за замовчуванням `False`.
+
+Щоб активувати:
+
+```python
+env["ir.config_parameter"].sudo().set_param("fayna_sms_base.active", "True")
+```
+
+Або через Settings → Technical → System Parameters.
+
+---
+
+## Як написати власний провайдер
+
+```python
+class MyProvider(models.AbstractModel):
+    _name = "fayna.sms.myprovider"
+    _inherit = "fayna.sms.provider.base"
+
+    def send_sms(self, phone: str, body: str) -> dict:
+        # ... call your API ...
+        return {"success": True, "external_id": "MSG-ID", "error": None}
+
+    def get_delivery_status(self, external_id: str) -> str:
+        return "pending"  # or "delivered" / "failed"
+```
+
+Встановіть `fayna_sms_base.default_provider = "myprovider"` у System Parameters.
+
+---
+
+## Встановлення
 
 ```bash
 cd /opt/campscout/custom-addons
@@ -57,14 +111,12 @@ docker exec campscout_web odoo -c /etc/odoo/odoo.conf -d campscout \
 docker restart campscout_web
 ```
 
-Module installs as **inert** (feature flag `False`). No behaviour change until flip.
+---
+
+## Ліцензія
+
+LGPL-3 — дивись [LICENSE](LICENSE).
 
 ---
 
-## License
-
-LGPL-3 — see [LICENSE](LICENSE).
-
----
-
-*Developed by [Fayna Digital](https://www.fayna.agency) · Volodymyr Shevchenko*
+*Розроблено [Fayna Digital](https://www.fayna.agency) · Volodymyr Shevchenko*
