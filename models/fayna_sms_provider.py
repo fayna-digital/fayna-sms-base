@@ -1,56 +1,86 @@
 # © 2026 Fayna Digital — Volodymyr Shevchenko <admin@fayna.agency>
 # License LGPL-3 — see LICENSE file for full text.
-from odoo import models
+from odoo import _, fields, models
+from odoo.exceptions import UserError
 
 
-class FaynaSmsProviderBase(models.AbstractModel):
-    """Abstract SMS provider base.
+class FaynaSmsProvider(models.Model):
+    """SMS provider configuration record.
 
-    Concrete provider modules (e.g. fayna_sms_turbosms) must:
-      1. ``_inherit = "fayna.sms.provider.base"``
-      2. Override :meth:`send_sms`.
-      3. Override :meth:`get_delivery_status` if the API supports it.
+    Each row represents one configured provider (e.g. TurboSMS API credentials).
+    The abstract implementation lives in :class:`FaynaSmsProviderBase`
+    (``fayna.sms.provider.base``) and is looked up via ``provider_type``.
 
-    Legacy hook ``_send_sms`` (batch, dict-return) is kept for backward
-    compatibility.  New providers implement the simpler single-message
-    ``send_sms`` / ``get_delivery_status`` pair.
+    Only ``base.group_system`` has write access — see ``ir.model.access.csv``.
+    ``api_key`` is declared ``password=True`` so it is masked in the UI.
     """
 
-    _name = "fayna.sms.provider.base"
-    _description = "Abstract SMS provider adapter (override in provider modules)"
+    _name = "fayna.sms.provider"
+    _description = "SMS Provider Configuration"
+    _order = "sequence, name"
+    _rec_name = "name"
 
-    # ── New single-message interface (used by fayna.sms.message cron) ─────────
+    # ── Identity ──────────────────────────────────────────────────────────────
+    name = fields.Char(
+        string="Provider name",
+        required=True,
+        help="Human-readable label, e.g. 'TurboSMS Production'.",
+    )
+    sequence = fields.Integer(
+        string="Sequence",
+        default=10,
+        help="Lower sequence = higher priority when multiple providers are active.",
+    )
+    provider_type = fields.Selection(
+        selection=[
+            ("turbosms", "TurboSMS"),
+        ],
+        string="Provider type",
+        required=True,
+        help="Technical adapter class suffix, e.g. 'turbosms' → fayna.sms.turbosms.",
+    )
 
+    # ── Credentials ───────────────────────────────────────────────────────────
+    api_key = fields.Char(
+        string="API key",
+        password=True,
+        help="Provider API key / token. Stored encrypted; masked in the UI.",
+        groups="base.group_system",
+    )
+
+    # ── Status ────────────────────────────────────────────────────────────────
+    active = fields.Boolean(
+        string="Active",
+        default=True,
+        help="Only the first active provider (by sequence) is used for dispatch.",
+    )
+
+    # ── Send-through entry point ──────────────────────────────────────────────
     def send_sms(self, phone: str, body: str) -> dict:
-        """Send SMS to a single phone number.
+        """Dispatch an SMS through the concrete adapter for this provider.
+
+        Looks up ``fayna.sms.<provider_type>`` model in the registry and
+        delegates the call.
 
         :param phone: E.164 phone number, e.g. ``"+48123456789"``.
-        :param body: SMS text content.
+        :param body: SMS text.
         :returns: ``{"success": bool, "external_id": str|None, "error": str|None}``
-        :raises NotImplementedError: Always — subclasses must override this.
+        :raises UserError: If the provider adapter model is not installed.
         """
-        raise NotImplementedError(f"{self.__class__.__name__} must implement send_sms()")
+        self.ensure_one()
+        adapter_model = f"fayna.sms.{self.provider_type}"
+        if adapter_model not in self.env:
+            raise UserError(
+                _("SMS provider adapter '%(model)s' is not installed.")
+                % {"model": adapter_model}
+            )
+        return self.env[adapter_model].send_sms(phone, body)
 
-    def get_delivery_status(self, external_id: str) -> str:
-        """Return delivery status for a previously sent message.
+    # ── Helpers ───────────────────────────────────────────────────────────────
+    @classmethod
+    def _get_active_provider(cls, env):
+        """Return the first active provider record (lowest sequence).
 
-        :param external_id: Provider-assigned message ID returned by :meth:`send_sms`.
-        :returns: One of ``"delivered"``, ``"failed"``, ``"pending"``.
-        :raises NotImplementedError: Always — subclasses must override this.
+        :returns: :class:`FaynaSmsProvider` singleton or empty recordset.
         """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} must implement get_delivery_status()"
-        )
-
-    # ── Legacy batch interface (kept for backward compatibility) ───────────────
-
-    def _send_sms(self, numbers: list, body: str) -> dict:
-        """Send SMS to one or more phone numbers (legacy batch interface).
-
-        :param numbers: List of E.164 phone numbers, e.g. ``["+48123456789"]``.
-        :param body: SMS text content.
-        :returns: Mapping ``{number: {"status": "sent"|"failed",
-            "message_id": str|None, "error": str|None}}``.
-        :raises NotImplementedError: Always — subclasses must override this.
-        """
-        raise NotImplementedError(f"{self.__class__.__name__} must implement _send_sms()")
+        return env["fayna.sms.provider"].search([("active", "=", True)], limit=1)

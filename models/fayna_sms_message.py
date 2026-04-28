@@ -65,10 +65,19 @@ class FaynaSmsMessage(models.Model):
     )
 
     # ── Routing ───────────────────────────────────────────────────────────────
+    provider_id = fields.Many2one(
+        comodel_name="fayna.sms.provider",
+        string="Provider",
+        ondelete="set null",
+        index=True,
+        help="SMS provider config record to use. Falls back to the first active provider.",
+    )
+    # Legacy selection field kept for backward-compat with existing records;
+    # new code should use provider_id.
     provider = fields.Selection(
         selection=_PROVIDER_SELECTION,
-        string="Provider",
-        help="SMS provider to use. Defaults to fayna_sms_base.default_provider system parameter.",
+        string="Provider type",
+        help="Legacy: SMS provider type. Use provider_id for new records.",
     )
 
     # ── State machine ─────────────────────────────────────────────────────────
@@ -132,13 +141,14 @@ class FaynaSmsMessage(models.Model):
 
     # ── Convenience factory ───────────────────────────────────────────────────
     @api.model
-    def send(self, phone, body, partner_id=None, priority="0"):
+    def send(self, phone, body, partner_id=None, priority="0", provider_id=None):
         """Queue an SMS for sending.
 
-        :param phone: E.164 phone number string (required).
+        :param phone: E.164 phone number string (required unless partner_id given).
         :param body: SMS text.
         :param partner_id: ``res.partner`` id (int) or recordset. May be None.
         :param priority: '0' Normal or '1' High.
+        :param provider_id: ``fayna.sms.provider`` record or id. Falls back to first active.
         :returns: ``fayna.sms.message`` record in state ``queued``.
         """
         if not phone:
@@ -154,6 +164,19 @@ class FaynaSmsMessage(models.Model):
             raise ValidationError(_("No phone number available for this partner."))
 
         pid = partner_id.id if hasattr(partner_id, "id") else partner_id
+
+        # Resolve provider_id
+        prov_id = None
+        if provider_id:
+            prov_id = provider_id.id if hasattr(provider_id, "id") else provider_id
+        else:
+            active_prov = self.env["fayna.sms.provider"].search(
+                [("active", "=", True)], limit=1
+            )
+            if active_prov:
+                prov_id = active_prov.id
+
+        # Legacy provider type from config parameter (fallback for backward compat)
         default_provider = (
             self.env["ir.config_parameter"]
             .sudo()
@@ -164,6 +187,7 @@ class FaynaSmsMessage(models.Model):
                 "partner_id": pid,
                 "phone": phone,
                 "body": body,
+                "provider_id": prov_id,
                 "provider": default_provider,
                 "state": "queued",
                 "priority": priority,
@@ -228,79 +252,105 @@ class FaynaSmsMessage(models.Model):
 
         _logger.info("fayna_sms_base: processing %d queued messages", len(queued))
 
-        for msg in queued:
-            provider_name = msg.provider or self.env["ir.config_parameter"].sudo().get_param(
-                "fayna_sms_base.default_provider", default=""
-            )
-            if not provider_name:
-                _logger.warning("fayna_sms_base: no provider configured, skipping msg id=%d", msg.id)
-                continue
+        # Find the default active provider once per batch
+        default_provider = self.env["fayna.sms.provider"].search(
+            [("active", "=", True)], limit=1
+        )
 
-            try:
-                provider = self.env[f"fayna.sms.{provider_name}"]
-            except KeyError:
-                _logger.error(
-                    "fayna_sms_base: provider model 'fayna.sms.%s' not found", provider_name
+        for msg in queued:
+            # Prefer per-message provider_id, fall back to batch default
+            provider_rec = msg.provider_id or default_provider
+            if not provider_rec:
+                # Last resort: legacy config parameter
+                provider_type = (
+                    msg.provider
+                    or self.env["ir.config_parameter"]
+                    .sudo()
+                    .get_param("fayna_sms_base.default_provider", default="")
                 )
+                if not provider_type:
+                    _logger.warning(
+                        "fayna_sms_base: no provider configured, skipping msg id=%d", msg.id
+                    )
+                    continue
+                adapter_model = f"fayna.sms.{provider_type}"
+                if adapter_model not in self.env:
+                    _logger.error(
+                        "fayna_sms_base: provider model '%s' not found", adapter_model
+                    )
+                    msg.write(
+                        {
+                            "state": "failed",
+                            "error_message": f"Provider '{adapter_model}' not installed.",
+                        }
+                    )
+                    continue
+                try:
+                    result = self.env[adapter_model].send_sms(msg.phone, msg.body)
+                except (ValueError, OSError, RuntimeError) as exc:
+                    _logger.exception(
+                        "fayna_sms_base: provider error for msg id=%d", msg.id
+                    )
+                    result = {"success": False, "external_id": None, "error": str(exc)}
+                provider_name = provider_type
+            else:
+                try:
+                    result = provider_rec.send_sms(msg.phone, msg.body)
+                except (ValueError, OSError, RuntimeError) as exc:
+                    _logger.exception(
+                        "fayna_sms_base: provider error for msg id=%d", msg.id
+                    )
+                    result = {"success": False, "external_id": None, "error": str(exc)}
+                provider_name = provider_rec.provider_type
+
+            self._handle_send_result(msg, result, provider_name)
+
+    def _handle_send_result(self, msg, result, provider_name):
+        """Apply send result to msg and write log entry."""
+        if result.get("success"):
+            msg.write(
+                {
+                    "state": "sent",
+                    "sent_at": fields.Datetime.now(),
+                    "external_id": result.get("external_id"),
+                    "error_message": False,
+                }
+            )
+            self.env["fayna.sms.log"].create(
+                {
+                    "provider_name": provider_name,
+                    "recipient_number": msg.phone,
+                    "body": msg.body,
+                    "status": "sent",
+                    "external_message_id": result.get("external_id"),
+                    "sent_at": fields.Datetime.now(),
+                    "partner_id": msg.partner_id.id if msg.partner_id else False,
+                }
+            )
+        else:
+            new_retry = msg.retry_count + 1
+            if new_retry >= msg.max_retries:
                 msg.write(
                     {
                         "state": "failed",
-                        "error_message": f"Provider 'fayna.sms.{provider_name}' not installed.",
+                        "retry_count": new_retry,
+                        "error_message": result.get("error", "Unknown error"),
                     }
                 )
-                continue
-
-            try:
-                result = provider.send_sms(msg.phone, msg.body)
-            except Exception as exc:  # noqa: BLE001
-                _logger.exception("fayna_sms_base: provider raised unexpected error for msg id=%d", msg.id)
-                result = {"success": False, "external_id": None, "error": str(exc)}
-
-            if result.get("success"):
-                msg.write(
-                    {
-                        "state": "sent",
-                        "sent_at": fields.Datetime.now(),
-                        "external_id": result.get("external_id"),
-                        "error_message": False,
-                    }
-                )
-                # Mirror to delivery log
                 self.env["fayna.sms.log"].create(
                     {
                         "provider_name": provider_name,
                         "recipient_number": msg.phone,
                         "body": msg.body,
-                        "status": "sent",
-                        "external_message_id": result.get("external_id"),
-                        "sent_at": fields.Datetime.now(),
+                        "status": "failed",
+                        "error_message": result.get("error", "Unknown error"),
                         "partner_id": msg.partner_id.id if msg.partner_id else False,
                     }
                 )
             else:
-                new_retry = msg.retry_count + 1
-                if new_retry >= msg.max_retries:
-                    msg.write(
-                        {
-                            "state": "failed",
-                            "retry_count": new_retry,
-                            "error_message": result.get("error", "Unknown error"),
-                        }
-                    )
-                    self.env["fayna.sms.log"].create(
-                        {
-                            "provider_name": provider_name,
-                            "recipient_number": msg.phone,
-                            "body": msg.body,
-                            "status": "failed",
-                            "error_message": result.get("error", "Unknown error"),
-                            "partner_id": msg.partner_id.id if msg.partner_id else False,
-                        }
-                    )
-                else:
-                    msg.write(
-                        {
-                            "retry_count": new_retry,
-                            "error_message": result.get("error", "Unknown error"),
-                        }
-                    )
+                msg.write(
+                    {
+                        "retry_count": new_retry,
+                        "error_message": result.get("error", "Unknown error"),
+                    }
+                )

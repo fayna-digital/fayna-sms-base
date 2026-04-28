@@ -1,14 +1,15 @@
 # © 2026 Fayna Digital — Volodymyr Shevchenko <admin@fayna.agency>
 # License LGPL-3 — see LICENSE file for full text.
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests.common import TransactionCase
 
 
 class TestFaynaSmsLog(TransactionCase):
-    """Unit tests for fayna.sms.log model and fayna.sms.provider contract.
+    """Unit tests for fayna.sms.log model and fayna.sms.provider config model.
 
-    Covers: CRUD, status transitions, log_result() helper, required fields,
-    optional fields, and the abstract provider NotImplementedError contract.
+    Covers: CRUD, immutability (write/unlink blocked), log_result() helper,
+    required fields, optional fields, and the abstract provider NotImplementedError
+    contract.
     """
 
     def setUp(self):
@@ -26,19 +27,19 @@ class TestFaynaSmsLog(TransactionCase):
         log = self.SmsLog.create(self._base_vals)
         self.assertEqual(log.status, "pending")
 
-    # ── 2. Status transition: pending → sent ─────────────────────────────────
-    def test_02_transition_pending_to_sent(self):
-        """Record can be moved from pending to sent."""
+    # ── 2. Log records are immutable — write raises UserError ────────────────
+    def test_02_log_write_blocked(self):
+        """fayna.sms.log.write() raises UserError — records are immutable."""
         log = self.SmsLog.create(self._base_vals)
-        log.write({"status": "sent"})
-        self.assertEqual(log.status, "sent")
+        with self.assertRaises(UserError):
+            log.write({"status": "sent"})
 
-    # ── 3. Status transition: pending → failed ───────────────────────────────
-    def test_03_transition_pending_to_failed(self):
-        """Record can be moved from pending to failed."""
+    # ── 3. Log records are immutable — unlink raises UserError ───────────────
+    def test_03_log_unlink_blocked(self):
+        """fayna.sms.log.unlink() raises UserError — records are immutable."""
         log = self.SmsLog.create(self._base_vals)
-        log.write({"status": "failed"})
-        self.assertEqual(log.status, "failed")
+        with self.assertRaises(UserError):
+            log.unlink()
 
     # ── 4. log_result() helper — sent path ───────────────────────────────────
     def test_04_log_result_sent(self):
@@ -127,9 +128,9 @@ class TestFaynaSmsLog(TransactionCase):
         log = self.SmsLog.create(dict(self._base_vals, external_message_id="PROVIDER-XYZ-42"))
         self.assertEqual(log.external_message_id, "PROVIDER-XYZ-42")
 
-    # ── 12. error_message populated on failure ────────────────────────────────
+    # ── 12. error_message visible on created failed log ───────────────────────
     def test_12_error_message_on_failure(self):
-        """error_message can be set independently of status."""
+        """error_message can be set at create time (status=failed)."""
         log = self.SmsLog.create(
             dict(self._base_vals, status="failed", error_message="Gateway timeout")
         )
@@ -139,7 +140,7 @@ class TestFaynaSmsLog(TransactionCase):
     # ── 13. Abstract provider raises NotImplementedError ─────────────────────
     def test_13_abstract_provider_raises_not_implemented(self):
         """Calling _send_sms() directly on the abstract model raises NotImplementedError."""
-        provider = self.env["fayna.sms.provider"]
+        provider = self.env["fayna.sms.provider.base"]
         with self.assertRaises(NotImplementedError):
             provider._send_sms(["+48000000000"], "test")
 
@@ -157,3 +158,44 @@ class TestFaynaSmsLog(TransactionCase):
             partner_id=partner.id,
         )
         self.assertEqual(log.partner_id, partner)
+
+    # ── 15. fayna.sms.provider config model — create and retrieve ────────────
+    def test_15_provider_config_create(self):
+        """fayna.sms.provider is a DB-backed model that can be created."""
+        prov = self.env["fayna.sms.provider"].create(
+            {
+                "name": "TurboSMS Test",
+                "provider_type": "turbosms",
+                "active": True,
+            }
+        )
+        self.assertTrue(prov.id)
+        self.assertEqual(prov.name, "TurboSMS Test")
+        self.assertEqual(prov.provider_type, "turbosms")
+        self.assertTrue(prov.active)
+
+    # ── 16. fayna.sms.provider.send_sms raises UserError if adapter missing ──
+    def test_16_provider_send_sms_missing_adapter(self):
+        """Provider.send_sms raises UserError when adapter model not installed."""
+        prov = self.env["fayna.sms.provider"].create(
+            {
+                "name": "Unknown Provider",
+                "provider_type": "turbosms",  # model not in env in tests
+            }
+        )
+        with self.assertRaises((UserError, KeyError)):
+            prov.send_sms("+48123456789", "test body")
+
+    # ── 17. fayna.sms.provider.base send_sms raises NotImplementedError ──────
+    def test_17_abstract_base_send_sms_raises(self):
+        """Calling send_sms() on the abstract base raises NotImplementedError."""
+        base = self.env["fayna.sms.provider.base"]
+        with self.assertRaises(NotImplementedError):
+            base.send_sms("+48000000000", "test")
+
+    # ── 18. fayna.sms.provider.base get_delivery_status raises ───────────────
+    def test_18_abstract_base_delivery_status_raises(self):
+        """Calling get_delivery_status() on the abstract base raises NotImplementedError."""
+        base = self.env["fayna.sms.provider.base"]
+        with self.assertRaises(NotImplementedError):
+            base.get_delivery_status("some-id")

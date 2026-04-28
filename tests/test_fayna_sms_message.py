@@ -136,15 +136,17 @@ class TestFaynaSmsMessage(TransactionCase):
         self.assertEqual(msg.phone, "+48222222222")
         self.assertEqual(msg.state, "queued")
 
-    # ── 13. Abstract provider send_sms raises NotImplementedError ─────────────
+    # ── 13. Abstract provider base send_sms raises NotImplementedError ─────────
     def test_13_abstract_provider_send_sms_raises(self):
-        provider = self.env["fayna.sms.provider"]
+        """fayna.sms.provider.base.send_sms raises NotImplementedError."""
+        provider = self.env["fayna.sms.provider.base"]
         with self.assertRaises(NotImplementedError):
             provider.send_sms("+48000000000", "test")
 
-    # ── 14. Abstract provider get_delivery_status raises NotImplementedError ──
+    # ── 14. Abstract provider base get_delivery_status raises NotImplementedError
     def test_14_abstract_provider_get_delivery_status_raises(self):
-        provider = self.env["fayna.sms.provider"]
+        """fayna.sms.provider.base.get_delivery_status raises NotImplementedError."""
+        provider = self.env["fayna.sms.provider.base"]
         with self.assertRaises(NotImplementedError):
             provider.get_delivery_status("some-external-id")
 

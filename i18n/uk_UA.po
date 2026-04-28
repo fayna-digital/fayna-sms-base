@@ -175,3 +175,47 @@ msgstr "%(number)s [%(status)s]"
 #. module: fayna_sms_base
 msgid "Phone number '%(phone)s' is not valid E.164 format (e.g. +48123456789)."
 msgstr "Номер телефону '%(phone)s' не відповідає формату E.164 (наприклад +48123456789)."
+
+#. module: fayna_sms_base
+msgid "Provider name"
+msgstr "Назва провайдера"
+
+#. module: fayna_sms_base
+msgid "Provider type"
+msgstr "Тип провайдера"
+
+#. module: fayna_sms_base
+msgid "API key"
+msgstr "API-ключ"
+
+#. module: fayna_sms_base
+msgid "Active"
+msgstr "Активний"
+
+#. module: fayna_sms_base
+msgid "Sequence"
+msgstr "Порядок"
+
+#. module: fayna_sms_base
+msgid "SMS Provider Configuration"
+msgstr "Конфігурація SMS-провайдера"
+
+#. module: fayna_sms_base
+msgid "SMS Providers"
+msgstr "SMS-провайдери"
+
+#. module: fayna_sms_base
+msgid "SMS provider adapter '%(model)s' is not installed."
+msgstr "SMS-адаптер '%(model)s' не встановлено."
+
+#. module: fayna_sms_base
+msgid "SMS log records are immutable and cannot be modified after creation."
+msgstr "Записи журналу SMS є незмінними і не можуть бути відредаговані після створення."
+
+#. module: fayna_sms_base
+msgid "SMS log records are immutable and cannot be deleted."
+msgstr "Записи журналу SMS є незмінними і не можуть бути видалені."
+
+#. module: fayna_sms_base
+msgid "Providers"
+msgstr "Провайдери"

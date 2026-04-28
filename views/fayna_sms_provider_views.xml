@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Tree view ────────────────────────────────────────────────────── -->
+    <record id="fayna_sms_provider_view_tree" model="ir.ui.view">
+        <field name="name">fayna.sms.provider.tree</field>
+        <field name="model">fayna.sms.provider</field>
+        <field name="arch" type="xml">
+            <tree string="SMS Providers" default_order="sequence, name">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="provider_type"/>
+                <field name="active" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ── Form view ────────────────────────────────────────────────────── -->
+    <record id="fayna_sms_provider_view_form" model="ir.ui.view">
+        <field name="name">fayna.sms.provider.form</field>
+        <field name="model">fayna.sms.provider</field>
+        <field name="arch" type="xml">
+            <form string="SMS Provider">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. TurboSMS Production"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Configuration">
+                            <field name="provider_type"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Credentials" groups="base.group_system">
+                            <field name="api_key" password="True"
+                                   placeholder="Paste your API key here"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── Action ───────────────────────────────────────────────────────── -->
+    <record id="fayna_sms_provider_action" model="ir.actions.act_window">
+        <field name="name">SMS Providers</field>
+        <field name="res_model">fayna.sms.provider</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No SMS providers configured yet.
+            </p>
+            <p>
+                Add a provider record and enter your API credentials to enable
+                outbound SMS dispatching.
+            </p>
+        </field>
+    </record>
+
+    <!-- ── Menu item under SMS root ─────────────────────────────────────── -->
+    <menuitem
+        id="menu_fayna_sms_provider"
+        name="Providers"
+        parent="menu_fayna_sms_root"
+        action="fayna_sms_provider_action"
+        sequence="1"
+        groups="base.group_system"
+    />
+
+</odoo>

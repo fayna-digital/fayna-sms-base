@@ -10,7 +10,8 @@
                 <field name="phone" readonly="1"/>
                 <field name="body" widget="char" optional="show"/>
                 <field name="partner_id" optional="show"/>
-                <field name="provider" optional="show"/>
+                <field name="provider_id" optional="show"/>
+                <field name="provider" optional="hide"/>
                 <field name="priority" widget="priority" optional="show"/>
                 <field name="state" readonly="1"
                        decoration-success="state == 'sent'"
@@ -49,7 +50,8 @@
                             <field name="phone"/>
                         </group>
                         <group string="Routing">
-                            <field name="provider"/>
+                            <field name="provider_id"/>
+                            <field name="provider" invisible="1"/>
                             <field name="priority" widget="priority"/>
                         </group>
                     </group>
@@ -80,6 +82,7 @@
             <search string="SMS Messages">
                 <field name="phone"/>
                 <field name="partner_id"/>
+                <field name="provider_id"/>
                 <field name="provider"/>
                 <filter string="Draft" name="filter_draft"
                         domain="[('state', '=', 'draft')]"/>

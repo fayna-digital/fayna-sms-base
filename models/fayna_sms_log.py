@@ -1,6 +1,7 @@
 # © 2026 Fayna Digital — Volodymyr Shevchenko <admin@fayna.agency>
 # License LGPL-3 — see LICENSE file for full text.
 from odoo import _, fields, models
+from odoo.exceptions import UserError
 
 
 class FaynaSmsLog(models.Model):
@@ -54,6 +55,19 @@ class FaynaSmsLog(models.Model):
     # ── Source traceability ───────────────────────────────────────────────────
     model_name = fields.Char(string="Source model")
     record_id = fields.Integer(string="Source record ID")
+
+    # ── Immutability ─────────────────────────────────────────────────────────
+    def write(self, vals):
+        """Block all writes after create — log records are immutable."""
+        raise UserError(
+            _("SMS log records are immutable and cannot be modified after creation.")
+        )
+
+    def unlink(self):
+        """Block deletion — log records are immutable."""
+        raise UserError(
+            _("SMS log records are immutable and cannot be deleted.")
+        )
 
     # ── Helper ───────────────────────────────────────────────────────────────
     @classmethod
