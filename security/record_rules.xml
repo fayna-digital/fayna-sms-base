@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- SMS log: immutable audit trail — admins only -->
+        <record id="sms_log_rule_admin" model="ir.rule">
+            <field name="name">SMS Log: admins only</field>
+            <field name="model_id" ref="model_fayna_sms_log"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+
+        <!-- SMS message queue: portal users see own (via partner_id) -->
+        <record id="sms_message_rule_portal" model="ir.rule">
+            <field name="name">SMS Message: portal sees own partner</field>
+            <field name="model_id" ref="model_fayna_sms_message"/>
+            <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        </record>
+
+        <!-- SMS message queue: internal users see all -->
+        <record id="sms_message_rule_internal" model="ir.rule">
+            <field name="name">SMS Message: internal sees all</field>
+            <field name="model_id" ref="model_fayna_sms_message"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+    </data>
+</odoo>

@@ -35,6 +35,7 @@ TZ: fayna-digital-docs/contributing/CAMPSCOUT_MASTER_TZ.md §16 Phase 4
     "depends": ["base", "mail"],
     "data": [
         "security/ir.model.access.csv",
+        "security/record_rules.xml",
         "data/ir_config_parameter.xml",
         "data/cron.xml",
         "views/fayna_sms_provider_views.xml",
