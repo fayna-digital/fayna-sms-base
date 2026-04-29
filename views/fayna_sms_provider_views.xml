@@ -62,14 +62,5 @@
         </field>
     </record>
 
-    <!-- ── Menu item under SMS root ─────────────────────────────────────── -->
-    <menuitem
-        id="menu_fayna_sms_provider"
-        name="Providers"
-        parent="menu_fayna_sms_root"
-        action="fayna_sms_provider_action"
-        sequence="1"
-        groups="base.group_system"
-    />
 
 </odoo>

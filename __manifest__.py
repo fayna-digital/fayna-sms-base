@@ -41,6 +41,7 @@ TZ: fayna-digital-docs/contributing/CAMPSCOUT_MASTER_TZ.md §16 Phase 4
         "views/fayna_sms_log_views.xml",
         "views/fayna_sms_message_views.xml",
         "views/fayna_sms_provider_views.xml",
+        "views/fayna_sms_menus.xml",
     ],
     "installable": True,
     "application": False,
