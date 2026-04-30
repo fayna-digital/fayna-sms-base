@@ -34,9 +34,7 @@ class FaynaSmsProviderBase(models.AbstractModel):
         :returns: One of ``"delivered"``, ``"failed"``, ``"pending"``.
         :raises NotImplementedError: Always — subclasses must override this.
         """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} must implement get_delivery_status()"
-        )
+        raise NotImplementedError(f"{self.__class__.__name__} must implement get_delivery_status()")
 
     # ── Legacy batch interface (kept for backward compatibility) ───────────────
 

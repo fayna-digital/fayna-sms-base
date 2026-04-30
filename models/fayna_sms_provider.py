@@ -70,8 +70,7 @@ class FaynaSmsProvider(models.Model):
         adapter_model = f"fayna.sms.{self.provider_type}"
         if adapter_model not in self.env:
             raise UserError(
-                _("SMS provider adapter '%(model)s' is not installed.")
-                % {"model": adapter_model}
+                _("SMS provider adapter '%(model)s' is not installed.") % {"model": adapter_model}
             )
         return self.env[adapter_model].send_sms(phone, body)
 

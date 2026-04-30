@@ -105,9 +105,7 @@ class TestFaynaSmsMessage(TransactionCase):
 
     # ── 10. Cron marks failed after max_retries exceeded ─────────────────────
     def test_10_cron_max_retries_reached(self):
-        msg = self.Msg.create(
-            dict(self._base_vals, state="queued", retry_count=2, max_retries=3)
-        )
+        msg = self.Msg.create(dict(self._base_vals, state="queued", retry_count=2, max_retries=3))
         fail_result = {"success": False, "external_id": None, "error": "Persistent error"}
 
         with patch.object(
@@ -122,9 +120,7 @@ class TestFaynaSmsMessage(TransactionCase):
 
     # ── 11. send() convenience method queues message via partner ─────────────
     def test_11_send_convenience_method(self):
-        partner = self.env["res.partner"].create(
-            {"name": "Test Partner", "phone": "+48987654321"}
-        )
+        partner = self.env["res.partner"].create({"name": "Test Partner", "phone": "+48987654321"})
         msg = self.Msg.send(phone=None, body="Test body", partner_id=partner.id)
         self.assertEqual(msg.state, "queued")
         self.assertEqual(msg.phone, "+48987654321")

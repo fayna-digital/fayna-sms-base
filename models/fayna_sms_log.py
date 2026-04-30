@@ -59,15 +59,11 @@ class FaynaSmsLog(models.Model):
     # ── Immutability ─────────────────────────────────────────────────────────
     def write(self, vals):
         """Block all writes after create — log records are immutable."""
-        raise UserError(
-            _("SMS log records are immutable and cannot be modified after creation.")
-        )
+        raise UserError(_("SMS log records are immutable and cannot be modified after creation."))
 
     def unlink(self):
         """Block deletion — log records are immutable."""
-        raise UserError(
-            _("SMS log records are immutable and cannot be deleted.")
-        )
+        raise UserError(_("SMS log records are immutable and cannot be deleted."))
 
     # ── Helper ───────────────────────────────────────────────────────────────
     @classmethod

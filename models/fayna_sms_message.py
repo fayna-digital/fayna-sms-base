@@ -170,9 +170,7 @@ class FaynaSmsMessage(models.Model):
         if provider_id:
             prov_id = provider_id.id if hasattr(provider_id, "id") else provider_id
         else:
-            active_prov = self.env["fayna.sms.provider"].search(
-                [("active", "=", True)], limit=1
-            )
+            active_prov = self.env["fayna.sms.provider"].search([("active", "=", True)], limit=1)
             if active_prov:
                 prov_id = active_prov.id
 
@@ -253,20 +251,15 @@ class FaynaSmsMessage(models.Model):
         _logger.info("fayna_sms_base: processing %d queued messages", len(queued))
 
         # Find the default active provider once per batch
-        default_provider = self.env["fayna.sms.provider"].search(
-            [("active", "=", True)], limit=1
-        )
+        default_provider = self.env["fayna.sms.provider"].search([("active", "=", True)], limit=1)
 
         for msg in queued:
             # Prefer per-message provider_id, fall back to batch default
             provider_rec = msg.provider_id or default_provider
             if not provider_rec:
                 # Last resort: legacy config parameter
-                provider_type = (
-                    msg.provider
-                    or self.env["ir.config_parameter"]
-                    .sudo()
-                    .get_param("fayna_sms_base.default_provider", default="")
+                provider_type = msg.provider or self.env["ir.config_parameter"].sudo().get_param(
+                    "fayna_sms_base.default_provider", default=""
                 )
                 if not provider_type:
                     _logger.warning(
@@ -275,9 +268,7 @@ class FaynaSmsMessage(models.Model):
                     continue
                 adapter_model = f"fayna.sms.{provider_type}"
                 if adapter_model not in self.env:
-                    _logger.error(
-                        "fayna_sms_base: provider model '%s' not found", adapter_model
-                    )
+                    _logger.error("fayna_sms_base: provider model '%s' not found", adapter_model)
                     msg.write(
                         {
                             "state": "failed",
@@ -288,18 +279,14 @@ class FaynaSmsMessage(models.Model):
                 try:
                     result = self.env[adapter_model].send_sms(msg.phone, msg.body)
                 except (ValueError, OSError, RuntimeError) as exc:
-                    _logger.exception(
-                        "fayna_sms_base: provider error for msg id=%d", msg.id
-                    )
+                    _logger.exception("fayna_sms_base: provider error for msg id=%d", msg.id)
                     result = {"success": False, "external_id": None, "error": str(exc)}
                 provider_name = provider_type
             else:
                 try:
                     result = provider_rec.send_sms(msg.phone, msg.body)
                 except (ValueError, OSError, RuntimeError) as exc:
-                    _logger.exception(
-                        "fayna_sms_base: provider error for msg id=%d", msg.id
-                    )
+                    _logger.exception("fayna_sms_base: provider error for msg id=%d", msg.id)
                     result = {"success": False, "external_id": None, "error": str(exc)}
                 provider_name = provider_rec.provider_type
 
