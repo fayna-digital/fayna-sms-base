@@ -17,12 +17,24 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 
 #. module: fayna_sms_base
-msgid "Abstract SMS provider (inherit and implement send_sms)"
-msgstr "Abstrakcyjny dostawca SMS (nadpisz i zaimplementuj send_sms)"
+msgid "%(number)s [%(status)s]"
+msgstr ""
+
+#. module: fayna_sms_base
+msgid "API key"
+msgstr "Klucz API"
 
 #. module: fayna_sms_base
 msgid "Abstract SMS provider (inherit and implement _send_sms)"
 msgstr "Abstrakcyjny dostawca SMS (nadpisz i zaimplementuj _send_sms)"
+
+#. module: fayna_sms_base
+msgid "Abstract SMS provider (inherit and implement send_sms)"
+msgstr "Abstrakcyjny dostawca SMS (nadpisz i zaimplementuj send_sms)"
+
+#. module: fayna_sms_base
+msgid "Active"
+msgstr "Aktywny"
 
 #. module: fayna_sms_base
 msgid "Date"
@@ -86,7 +98,7 @@ msgstr "Normalny"
 
 #. module: fayna_sms_base
 msgid "Partner"
-msgstr "Partner"
+msgstr ""
 
 #. module: fayna_sms_base
 msgid "Pending"
@@ -95,6 +107,12 @@ msgstr "Oczekuje"
 #. module: fayna_sms_base
 msgid "Phone"
 msgstr "Telefon"
+
+#. module: fayna_sms_base
+msgid ""
+"Phone number '%(phone)s' is not valid E.164 format (e.g. +48123456789)."
+msgstr ""
+"Numer telefonu '%(phone)s' nie jest w formacie E.164 (np. +48123456789)."
 
 #. module: fayna_sms_base
 msgid "Priority"
@@ -107,6 +125,18 @@ msgstr "Dostawca"
 #. module: fayna_sms_base
 msgid "Provider message ID"
 msgstr "ID wiadomości dostawcy"
+
+#. module: fayna_sms_base
+msgid "Provider name"
+msgstr "Nazwa dostawcy"
+
+#. module: fayna_sms_base
+msgid "Provider type"
+msgstr "Typ dostawcy"
+
+#. module: fayna_sms_base
+msgid "Providers"
+msgstr "Dostawcy"
 
 #. module: fayna_sms_base
 msgid "Queued"
@@ -125,16 +155,45 @@ msgid "SMS Log"
 msgstr "Dziennik SMS"
 
 #. module: fayna_sms_base
+msgid "SMS Log Entry"
+msgstr "Wpis dziennika SMS"
+
+#. module: fayna_sms_base
+msgid "SMS Message"
+msgstr "Wiadomość SMS"
+
+#. module: fayna_sms_base
 msgid "SMS Message Queue"
 msgstr "Kolejka wiadomości SMS"
+
+#. module: fayna_sms_base
+msgid "SMS Messages"
+msgstr "Wiadomości SMS"
+
+#. module: fayna_sms_base
+msgid "SMS Provider Configuration"
+msgstr "Konfiguracja dostawcy SMS"
+
+#. module: fayna_sms_base
+msgid "SMS Providers"
+msgstr "Dostawcy SMS"
 
 #. module: fayna_sms_base
 msgid "SMS delivery log"
 msgstr "Dziennik dostarczania SMS"
 
 #. module: fayna_sms_base
-msgid "SMS Messages"
-msgstr "Wiadomości SMS"
+msgid "SMS log records are immutable and cannot be deleted."
+msgstr "Rekordy dziennika SMS są niezmienne i nie mogą być usunięte."
+
+#. module: fayna_sms_base
+msgid "SMS log records are immutable and cannot be modified after creation."
+msgstr ""
+"Rekordy dziennika SMS są niezmienne i nie mogą być edytowane po utworzeniu."
+
+#. module: fayna_sms_base
+msgid "SMS provider adapter '%(model)s' is not installed."
+msgstr "Adapter SMS '%(model)s' nie jest zainstalowany."
 
 #. module: fayna_sms_base
 msgid "Sent"
@@ -145,12 +204,8 @@ msgid "Sent at"
 msgstr "Wysłano o"
 
 #. module: fayna_sms_base
-msgid "SMS Log Entry"
-msgstr "Wpis dziennika SMS"
-
-#. module: fayna_sms_base
-msgid "SMS Message"
-msgstr "Wiadomość SMS"
+msgid "Sequence"
+msgstr "Kolejność"
 
 #. module: fayna_sms_base
 msgid "Source model"
@@ -166,56 +221,4 @@ msgstr "Stan"
 
 #. module: fayna_sms_base
 msgid "Status"
-msgstr "Status"
-
-#. module: fayna_sms_base
-msgid "%(number)s [%(status)s]"
-msgstr "%(number)s [%(status)s]"
-
-#. module: fayna_sms_base
-msgid "Phone number '%(phone)s' is not valid E.164 format (e.g. +48123456789)."
-msgstr "Numer telefonu '%(phone)s' nie jest w formacie E.164 (np. +48123456789)."
-
-#. module: fayna_sms_base
-msgid "Provider name"
-msgstr "Nazwa dostawcy"
-
-#. module: fayna_sms_base
-msgid "Provider type"
-msgstr "Typ dostawcy"
-
-#. module: fayna_sms_base
-msgid "API key"
-msgstr "Klucz API"
-
-#. module: fayna_sms_base
-msgid "Active"
-msgstr "Aktywny"
-
-#. module: fayna_sms_base
-msgid "Sequence"
-msgstr "Kolejność"
-
-#. module: fayna_sms_base
-msgid "SMS Provider Configuration"
-msgstr "Konfiguracja dostawcy SMS"
-
-#. module: fayna_sms_base
-msgid "SMS Providers"
-msgstr "Dostawcy SMS"
-
-#. module: fayna_sms_base
-msgid "SMS provider adapter '%(model)s' is not installed."
-msgstr "Adapter SMS '%(model)s' nie jest zainstalowany."
-
-#. module: fayna_sms_base
-msgid "SMS log records are immutable and cannot be modified after creation."
-msgstr "Rekordy dziennika SMS są niezmienne i nie mogą być edytowane po utworzeniu."
-
-#. module: fayna_sms_base
-msgid "SMS log records are immutable and cannot be deleted."
-msgstr "Rekordy dziennika SMS są niezmienne i nie mogą być usunięte."
-
-#. module: fayna_sms_base
-msgid "Providers"
-msgstr "Dostawcy"
+msgstr ""

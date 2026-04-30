@@ -17,12 +17,24 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #. module: fayna_sms_base
-msgid "Abstract SMS provider (inherit and implement send_sms)"
-msgstr "Абстрактний SMS-провайдер (наслідувати та реалізувати send_sms)"
+msgid "%(number)s [%(status)s]"
+msgstr ""
+
+#. module: fayna_sms_base
+msgid "API key"
+msgstr "API-ключ"
 
 #. module: fayna_sms_base
 msgid "Abstract SMS provider (inherit and implement _send_sms)"
 msgstr "Абстрактний SMS-провайдер (наслідувати та реалізувати _send_sms)"
+
+#. module: fayna_sms_base
+msgid "Abstract SMS provider (inherit and implement send_sms)"
+msgstr "Абстрактний SMS-провайдер (наслідувати та реалізувати send_sms)"
+
+#. module: fayna_sms_base
+msgid "Active"
+msgstr "Активний"
 
 #. module: fayna_sms_base
 msgid "Date"
@@ -97,6 +109,13 @@ msgid "Phone"
 msgstr "Телефон"
 
 #. module: fayna_sms_base
+msgid ""
+"Phone number '%(phone)s' is not valid E.164 format (e.g. +48123456789)."
+msgstr ""
+"Номер телефону '%(phone)s' не відповідає формату E.164 (наприклад "
+"+48123456789)."
+
+#. module: fayna_sms_base
 msgid "Priority"
 msgstr "Пріоритет"
 
@@ -107,6 +126,18 @@ msgstr "Провайдер"
 #. module: fayna_sms_base
 msgid "Provider message ID"
 msgstr "ID повідомлення провайдера"
+
+#. module: fayna_sms_base
+msgid "Provider name"
+msgstr "Назва провайдера"
+
+#. module: fayna_sms_base
+msgid "Provider type"
+msgstr "Тип провайдера"
+
+#. module: fayna_sms_base
+msgid "Providers"
+msgstr "Провайдери"
 
 #. module: fayna_sms_base
 msgid "Queued"
@@ -125,16 +156,46 @@ msgid "SMS Log"
 msgstr "Журнал SMS"
 
 #. module: fayna_sms_base
+msgid "SMS Log Entry"
+msgstr "Запис журналу SMS"
+
+#. module: fayna_sms_base
+msgid "SMS Message"
+msgstr "SMS-повідомлення"
+
+#. module: fayna_sms_base
 msgid "SMS Message Queue"
 msgstr "Черга SMS-повідомлень"
+
+#. module: fayna_sms_base
+msgid "SMS Messages"
+msgstr "SMS-повідомлення"
+
+#. module: fayna_sms_base
+msgid "SMS Provider Configuration"
+msgstr "Конфігурація SMS-провайдера"
+
+#. module: fayna_sms_base
+msgid "SMS Providers"
+msgstr "SMS-провайдери"
 
 #. module: fayna_sms_base
 msgid "SMS delivery log"
 msgstr "Журнал доставки SMS"
 
 #. module: fayna_sms_base
-msgid "SMS Messages"
-msgstr "SMS-повідомлення"
+msgid "SMS log records are immutable and cannot be deleted."
+msgstr "Записи журналу SMS є незмінними і не можуть бути видалені."
+
+#. module: fayna_sms_base
+msgid "SMS log records are immutable and cannot be modified after creation."
+msgstr ""
+"Записи журналу SMS є незмінними і не можуть бути відредаговані після "
+"створення."
+
+#. module: fayna_sms_base
+msgid "SMS provider adapter '%(model)s' is not installed."
+msgstr "SMS-адаптер '%(model)s' не встановлено."
 
 #. module: fayna_sms_base
 msgid "Sent"
@@ -145,12 +206,8 @@ msgid "Sent at"
 msgstr "Відправлено о"
 
 #. module: fayna_sms_base
-msgid "SMS Log Entry"
-msgstr "Запис журналу SMS"
-
-#. module: fayna_sms_base
-msgid "SMS Message"
-msgstr "SMS-повідомлення"
+msgid "Sequence"
+msgstr "Порядок"
 
 #. module: fayna_sms_base
 msgid "Source model"
@@ -167,55 +224,3 @@ msgstr "Стан"
 #. module: fayna_sms_base
 msgid "Status"
 msgstr "Статус"
-
-#. module: fayna_sms_base
-msgid "%(number)s [%(status)s]"
-msgstr "%(number)s [%(status)s]"
-
-#. module: fayna_sms_base
-msgid "Phone number '%(phone)s' is not valid E.164 format (e.g. +48123456789)."
-msgstr "Номер телефону '%(phone)s' не відповідає формату E.164 (наприклад +48123456789)."
-
-#. module: fayna_sms_base
-msgid "Provider name"
-msgstr "Назва провайдера"
-
-#. module: fayna_sms_base
-msgid "Provider type"
-msgstr "Тип провайдера"
-
-#. module: fayna_sms_base
-msgid "API key"
-msgstr "API-ключ"
-
-#. module: fayna_sms_base
-msgid "Active"
-msgstr "Активний"
-
-#. module: fayna_sms_base
-msgid "Sequence"
-msgstr "Порядок"
-
-#. module: fayna_sms_base
-msgid "SMS Provider Configuration"
-msgstr "Конфігурація SMS-провайдера"
-
-#. module: fayna_sms_base
-msgid "SMS Providers"
-msgstr "SMS-провайдери"
-
-#. module: fayna_sms_base
-msgid "SMS provider adapter '%(model)s' is not installed."
-msgstr "SMS-адаптер '%(model)s' не встановлено."
-
-#. module: fayna_sms_base
-msgid "SMS log records are immutable and cannot be modified after creation."
-msgstr "Записи журналу SMS є незмінними і не можуть бути відредаговані після створення."
-
-#. module: fayna_sms_base
-msgid "SMS log records are immutable and cannot be deleted."
-msgstr "Записи журналу SMS є незмінними і не можуть бути видалені."
-
-#. module: fayna_sms_base
-msgid "Providers"
-msgstr "Провайдери"
