@@ -15,3 +15,16 @@ htmlcov/
 .venv/
 venv/
 uv.lock
+
+# Секрети — НІКОЛИ не комітити (golden rule #1 #SECRETS)
+.env
+*.env
+.env.*
+*.key
+*.pem
+*.crt
+*.cert
+*.p12
+*_token*
+credentials
+credentials.*

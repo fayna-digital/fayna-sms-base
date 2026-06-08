@@ -7,6 +7,27 @@ Versioning: Odoo `17.0.MAJOR.MINOR.PATCH`.
 
 ---
 
+## [17.0.2.1.0] — 2026-04-29
+
+### Added
+- `fayna.sms.provider` — DB-конфіг провайдера (`name`, `sequence`, `provider_type`,
+  `api_key`, `active`); `send_sms()` делегує до `fayna.sms.<provider_type>`;
+  `_get_active_provider()` повертає першого активного за `sequence`.
+- `fayna.sms.message.provider_id` (M2o на `fayna.sms.provider`) — маршрутизація
+  per-message; `send()` приймає `provider_id`, з fallback на першого активного.
+- `views/fayna_sms_provider_views.xml` + `security/record_rules.xml`;
+  `api_key` захищено `groups="base.group_system"` (маскується в UI).
+- `process_sms_queue()` обирає провайдера per-message → batch default → legacy
+  config parameter; результат дзеркалиться в незмінний `fayna.sms.log`.
+
+### Docs (приведення до REPO_STANDARD)
+- `CLAUDE.md` — як працювати з репо + банер #4ZONES.
+- `docs/TZ.md` — переписано у 6 областей spec-driven (+ Success Criteria + Open Questions).
+- `docs/PLAN.md` — dependency graph + фази + checkpoints.
+- `.gitignore` — додано ігнор секретів (`.env`, `*.key`, `*.pem`, `*_token*`, `credentials`).
+
+---
+
 ## [17.0.2.0.0] — 2026-04-28
 
 ### Added

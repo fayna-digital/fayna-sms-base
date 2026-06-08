@@ -1,4 +1,4 @@
-# Fayna SMS Base — Odoo 17 (v17.0.2.0.0)
+# Fayna SMS Base — Odoo 17 (v17.0.2.1.0)
 
 ![Odoo Version](https://img.shields.io/badge/Odoo-17.0%20Community-purple)
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
@@ -59,7 +59,10 @@ fayna_sms_base/
 ├── i18n/
 │   ├── uk_UA.po
 │   └── pl_PL.po
-├── docs/TZ.md
+├── docs/
+│   ├── TZ.md                       # специфікація (6 областей spec-driven)
+│   └── PLAN.md                     # dependency graph + фази + checkpoints
+├── CLAUDE.md                       # як працювати з репо + #4ZONES
 ├── pyproject.toml
 ├── LICENSE
 ├── CHANGELOG.md
@@ -110,6 +113,15 @@ docker exec campscout_web odoo -c /etc/odoo/odoo.conf -d campscout \
     -i fayna_sms_base --stop-after-init --no-http
 docker restart campscout_web
 ```
+
+---
+
+## Документація
+
+- [docs/TZ.md](docs/TZ.md) — канонічна специфікація (6 областей: Objective / Commands / Project Structure / Code Style / Testing / Boundaries).
+- [docs/PLAN.md](docs/PLAN.md) — план реалізації: dependency graph, фази, checkpoints.
+- [CLAUDE.md](CLAUDE.md) — як працювати з репо + правило #4ZONES.
+- [CHANGELOG.md](CHANGELOG.md) — історія версій.
 
 ---
 
