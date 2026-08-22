@@ -6,41 +6,43 @@
 ![License](https://img.shields.io/badge/License-LGPL--3-green.svg)
 ![Status](https://img.shields.io/badge/Status-Production-brightgreen)
 
-**Розроблено [Fayna Digital](https://www.fayna.agency) для CampScout.**
-**Автор: Volodymyr Shevchenko**
+**Opracowane przez [Fayna Digital](https://www.fayna.agency) dla CampScout.**
+**Autor: Volodymyr Shevchenko**
 
 ---
 
-## Що це
+## Co to jest
 
-Базовий модуль SMS-інтеграції для Odoo 17. Надає абстрактний адаптер для будь-якого SMS-провайдера, чергу відправлення та журнал доставки.
+Bazowy moduł integracji SMS dla Odoo 17. Dostarcza abstrakcyjny adapter dla
+dowolnego providera SMS, kolejkę wysyłki oraz dziennik dostarczenia.
 
-Конкретні провайдери (наприклад `fayna_sms_turbosms`) наслідують цей модуль і реалізують `send_sms()`.
+Konkretni providerzy (np. `fayna_sms_turbosms`) dziedziczą ten moduł i
+implementują `send_sms()`.
 
 ---
 
-## Можливості
+## Możliwości
 
-- `fayna.sms.provider.base` — абстрактний адаптер провайдера (патерн Strangler Fig)
-- `fayna.sms.message` — черга вихідних SMS зі станами `draft → queued → sent / failed`
-- `fayna.sms.log` — незмінний журнал кожного надісланого SMS
-- Логіка повтору: `max_retries`, `retry_count`, автоматичне позначення `failed`
-- Зручний метод: `fayna.sms.message.send(phone, body, partner_id=None)`
-- Нормалізація телефону у форматі E.164
-- Cron кожні 5 хвилин (активується через feature flag `fayna_sms_base.active`)
-- Views для черги та журналу у меню Settings → SMS
+- `fayna.sms.provider.base` — abstrakcyjny adapter providera (wzorzec Strangler Fig)
+- `fayna.sms.message` — kolejka wychodzących SMS ze stanami `draft → queued → sent / failed`
+- `fayna.sms.log` — niezmienny dziennik każdego wysłanego SMS
+- Logika ponawiania: `max_retries`, `retry_count`, automatyczne oznaczanie `failed`
+- Wygodna metoda: `fayna.sms.message.send(phone, body, partner_id=None)`
+- Normalizacja telefonu do formatu E.164
+- Cron co 5 minut (aktywowany przez feature flag `fayna_sms_base.active`)
+- Widoki dla kolejki i dziennika w menu Settings → SMS
 - i18n: `uk_UA` + `pl_PL`
 
 ---
 
-## Архітектура
+## Architektura
 
 ```
 fayna_sms_base/
 ├── __manifest__.py
 ├── __init__.py
 ├── data/
-│   ├── cron.xml                    # cron кожні 5 хв
+│   ├── cron.xml                    # cron co 5 min
 │   └── ir_config_parameter.xml     # feature flag + default_provider
 ├── models/
 │   ├── sms_provider_base.py        # fayna.sms.provider (legacy alias)
@@ -48,21 +50,22 @@ fayna_sms_base/
 │   ├── fayna_sms_log.py            # fayna.sms.log
 │   └── fayna_sms_message.py        # fayna.sms.message + process_sms_queue()
 ├── security/
-│   └── ir.model.access.csv         # ACL для log і message
+│   └── ir.model.access.csv         # ACL dla log i message
 ├── views/
 │   ├── fayna_sms_log_views.xml
-│   └── fayna_sms_message_views.xml
+│   ├── fayna_sms_message_views.xml
+│   ├── fayna_sms_provider_views.xml
+│   └── fayna_sms_menus.xml
 ├── tests/
 │   ├── test_scaffold.py
-│   ├── test_fayna_sms_base.py      # 14 тестів для fayna.sms.log
-│   └── test_fayna_sms_message.py   # 22 тести для черги та cron
+│   ├── test_fayna_sms_base.py      # 14 testów dla fayna.sms.log
+│   └── test_fayna_sms_message.py   # 22 testy dla kolejki i crona
 ├── i18n/
 │   ├── uk_UA.po
 │   └── pl_PL.po
 ├── docs/
-│   ├── TZ.md                       # специфікація (6 областей spec-driven)
-│   └── PLAN.md                     # dependency graph + фази + checkpoints
-├── CLAUDE.md                       # як працювати з репо + #4ZONES
+│   ├── TZ.md                       # specyfikacja (6 obszarów spec-driven)
+│   └── PLAN.md                     # dependency graph + fazy + checkpointy
 ├── pyproject.toml
 ├── LICENSE
 ├── CHANGELOG.md
@@ -73,19 +76,19 @@ fayna_sms_base/
 
 ## Feature flag (Strangler Fig)
 
-Після встановлення cron **не відправляє SMS** — флаг `fayna_sms_base.active` за замовчуванням `False`.
+Po instalacji cron **nie wysyła SMS** — flaga `fayna_sms_base.active` domyślnie `False`.
 
-Щоб активувати:
+Aby aktywować:
 
 ```python
 env["ir.config_parameter"].sudo().set_param("fayna_sms_base.active", "True")
 ```
 
-Або через Settings → Technical → System Parameters.
+Lub przez Settings → Technical → System Parameters.
 
 ---
 
-## Як написати власний провайдер
+## Jak napisać własnego providera
 
 ```python
 class MyProvider(models.AbstractModel):
@@ -93,18 +96,18 @@ class MyProvider(models.AbstractModel):
     _inherit = "fayna.sms.provider.base"
 
     def send_sms(self, phone: str, body: str) -> dict:
-        # ... call your API ...
+        # ... wywołaj swoje API ...
         return {"success": True, "external_id": "MSG-ID", "error": None}
 
     def get_delivery_status(self, external_id: str) -> str:
         return "pending"  # or "delivered" / "failed"
 ```
 
-Встановіть `fayna_sms_base.default_provider = "myprovider"` у System Parameters.
+Ustaw `fayna_sms_base.default_provider = "myprovider"` w System Parameters.
 
 ---
 
-## Встановлення
+## Instalacja
 
 ```bash
 cd /opt/campscout/custom-addons
@@ -116,19 +119,18 @@ docker restart campscout_web
 
 ---
 
-## Документація
+## Dokumentacja
 
-- [docs/TZ.md](docs/TZ.md) — канонічна специфікація (6 областей: Objective / Commands / Project Structure / Code Style / Testing / Boundaries).
-- [docs/PLAN.md](docs/PLAN.md) — план реалізації: dependency graph, фази, checkpoints.
-- [CLAUDE.md](CLAUDE.md) — як працювати з репо + правило #4ZONES.
-- [CHANGELOG.md](CHANGELOG.md) — історія версій.
-
----
-
-## Ліцензія
-
-LGPL-3 — дивись [LICENSE](LICENSE).
+- [docs/TZ.md](docs/TZ.md) — kanoniczna specyfikacja (6 obszarów: Objective / Commands / Project Structure / Code Style / Testing / Boundaries).
+- [docs/PLAN.md](docs/PLAN.md) — plan implementacji: dependency graph, fazy, checkpointy.
+- [CHANGELOG.md](CHANGELOG.md) — historia wersji.
 
 ---
 
-*Розроблено [Fayna Digital](https://www.fayna.agency) · Volodymyr Shevchenko*
+## Licencja
+
+LGPL-3 — patrz [LICENSE](LICENSE).
+
+---
+
+*Opracowane przez [Fayna Digital](https://www.fayna.agency) · Volodymyr Shevchenko*
