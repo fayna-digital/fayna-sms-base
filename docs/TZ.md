@@ -121,7 +121,7 @@ def _check_phone(self):
 
 **Always:**
 - Деплой лише #4ZONES: Mac → GitHub → staging → prod (golden rule #3 — [[meta/golden-rules-developer]]).
-- `chmod -R o+rX` після git pull на сервері ([[claude-memory/feedback_git_pull_permissions]]).
+- `chmod -R o+rX` після git pull на сервері ().
 - ≥1 тест на кожен fix; CHANGELOG-запис; Semantic Version bump.
 - `api_key` лише через захищене поле `base.group_system`.
 
