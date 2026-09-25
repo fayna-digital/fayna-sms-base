@@ -111,7 +111,7 @@ Ustaw `fayna_sms_base.default_provider = "myprovider"` w System Parameters.
 
 ```bash
 cd /opt/campscout/custom-addons
-sudo -u \#1000 git clone https://github.com/VladSh77/fayna-sms-base.git fayna_sms_base
+sudo -u \#1000 git clone https://github.com/fayna-digital/fayna-sms-base.git fayna_sms_base
 docker exec campscout_web odoo -c /etc/odoo/odoo.conf -d campscout \
     -i fayna_sms_base --stop-after-init --no-http
 docker restart campscout_web
