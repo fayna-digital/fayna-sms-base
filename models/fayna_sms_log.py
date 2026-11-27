@@ -104,12 +104,9 @@ class FaynaSmsLog(models.Model):
         return env["fayna.sms.log"].create(vals)
 
     # ── Display ───────────────────────────────────────────────────────────────
-    def name_get(self):
-        result = []
+    def _compute_display_name(self):
         for rec in self:
-            label = _("%(number)s [%(status)s]") % {
+            rec.display_name = _("%(number)s [%(status)s]") % {
                 "number": rec.recipient_number,
                 "status": rec.status,
             }
-            result.append((rec.id, label))
-        return result

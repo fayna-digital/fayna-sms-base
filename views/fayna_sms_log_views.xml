@@ -6,7 +6,7 @@
         <field name="name">fayna.sms.log.tree</field>
         <field name="model">fayna.sms.log</field>
         <field name="arch" type="xml">
-            <tree string="SMS Log" default_order="create_date desc">
+            <list string="SMS Log" default_order="create_date desc">
                 <field name="create_date" string="Date" readonly="1"/>
                 <field name="provider_name" readonly="1"/>
                 <field name="recipient_number" readonly="1"/>
@@ -16,7 +16,7 @@
                        decoration-danger="status == 'failed'"
                        decoration-muted="status == 'pending'"/>
                 <field name="sent_at" readonly="1"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -92,7 +92,7 @@
     <record id="fayna_sms_log_action" model="ir.actions.act_window">
         <field name="name">SMS Log</field>
         <field name="res_model">fayna.sms.log</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="fayna_sms_log_view_search"/>
         <field name="context">{'search_default_filter_failed': 0}</field>
         <field name="help" type="html">

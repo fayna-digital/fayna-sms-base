@@ -1,6 +1,6 @@
 {
     "name": "Fayna SMS Base",
-    "version": "17.0.2.1.0",
+    "version": "18.0.2.2.0",
     "category": "Tools/Camp Management",
     "summary": "Provider-agnostic SMS adapter base (abstract send + outbound queue + delivery log)",
     "description": """
